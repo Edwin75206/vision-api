@@ -1,26 +1,29 @@
-
+import { connectDB } from "../database.js";
 import { LugarTuristico } from "../models/place.model.js";
 
 export const lugarDao = {
-  obtenerTodos() {
+  async obtenerTodos() {
+    await connectDB();
     return LugarTuristico.find().sort({ createdAt: -1 });
   },
 
-  crear(datosLugar) {
+  async crear(datosLugar) {
+    await connectDB();
     return LugarTuristico.create(datosLugar);
   },
 
-  actualizar(idLugar, datosLugar) {
-    return LugarTuristico.findByIdAndUpdate(idLugar, datosLugar, {
-      new: true,
-    });
+  async actualizar(idLugar, datosLugar) {
+    await connectDB();
+    return LugarTuristico.findByIdAndUpdate(idLugar, datosLugar, { new: true });
   },
 
-  eliminar(idLugar) {
+  async eliminar(idLugar) {
+    await connectDB();
     return LugarTuristico.findByIdAndDelete(idLugar);
   },
 
-  buscarPorId(idLugar) {
+  async buscarPorId(idLugar) {
+    await connectDB();
     return LugarTuristico.findById(idLugar);
   },
 };
