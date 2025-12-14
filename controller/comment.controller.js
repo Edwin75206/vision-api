@@ -1,6 +1,17 @@
 import { comentarioDao } from "../daos/comment.daos.js";
 import { lugarDao } from "../daos/place.daos.js";
 
+
+function puedeModificar({ reqUsuario, comentario }) {
+  if (!reqUsuario) return false;
+  if (reqUsuario.rol === "admin") return true;
+
+  // si el comentario es público (sin usuario), solo admin
+  if (!comentario.usuario) return false;
+
+  return String(comentario.usuario._id || comentario.usuario) === String(reqUsuario.id);
+}
+
 export const comentarioControlador = {
   obtenerPorLugar: async (req, res) => {
     try {
@@ -65,6 +76,48 @@ export const comentarioControlador = {
       res.status(201).json(comentario);
     } catch (err) {
       console.error("Error en crearComoUsuario comentario:", err);
+      res.status(500).json({ mensaje: "Error del servidor" });
+    }
+  }, actualizar: async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { texto } = req.body;
+
+      if (!texto || !String(texto).trim()) {
+        return res.status(400).json({ mensaje: "texto es obligatorio" });
+      }
+
+      const comentario = await comentarioDao.obtenerPorId(id);
+      if (!comentario) return res.status(404).json({ mensaje: "Comentario no encontrado" });
+
+      if (!puedeModificar({ reqUsuario: req.usuario, comentario })) {
+        return res.status(403).json({ mensaje: "No tienes permiso para editar este comentario" });
+      }
+
+      const actualizado = await comentarioDao.actualizarTexto(id, String(texto).trim());
+      return res.json(actualizado);
+    } catch (err) {
+      console.error("Error en actualizar comentario:", err);
+      res.status(500).json({ mensaje: "Error del servidor" });
+    }
+  },
+
+  // ✅ NUEVO: Eliminar
+  eliminar: async (req, res) => {
+    try {
+      const { id } = req.params;
+
+      const comentario = await comentarioDao.obtenerPorId(id);
+      if (!comentario) return res.status(404).json({ mensaje: "Comentario no encontrado" });
+
+      if (!puedeModificar({ reqUsuario: req.usuario, comentario })) {
+        return res.status(403).json({ mensaje: "No tienes permiso para eliminar este comentario" });
+      }
+
+      await comentarioDao.eliminar(id);
+      return res.json({ ok: true, mensaje: "Comentario eliminado" });
+    } catch (err) {
+      console.error("Error en eliminar comentario:", err);
       res.status(500).json({ mensaje: "Error del servidor" });
     }
   },

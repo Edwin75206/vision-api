@@ -8,7 +8,15 @@ import commentsRoutes from "./routes/comment.routes.js";
 export const app = express();
 
 // Middlewares globales
-app.use(cors());
+
+app.use(cors({
+  origin: [
+    "http://localhost:5173",        // Vite dev
+    "http://127.0.0.1:5173",
+    // aquí tu URL de producción del frontend cuando la tengas
+  ],
+  credentials: true
+}));
 app.use(express.json());
 
 // Rutas

@@ -13,4 +13,8 @@ router.post("/", comentarioControlador.crearPublico);
 // Crear comentario con usuario logueado
 router.post("/yo", authRequerida, comentarioControlador.crearComoUsuario);
 
+
+router.put("/:id", authRequerida, comentarioControlador.actualizar);
+router.delete("/:id", authRequerida, comentarioControlador.eliminar);
+
 export default router;

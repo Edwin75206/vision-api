@@ -10,4 +10,21 @@ export const comentarioDao = {
   crear(datosComentario) {
     return Comentario.create(datosComentario);
   },
+  obtenerPorId(id) {
+    return Comentario.findById(id).populate("usuario", "nombre rol");
+  },
+
+  // ✅ NUEVO
+  actualizarTexto(id, texto) {
+    return Comentario.findByIdAndUpdate(
+      id,
+      { texto },
+      { new: true }
+    ).populate("usuario", "nombre rol");
+  },
+
+  // ✅ NUEVO
+  eliminar(id) {
+    return Comentario.findByIdAndDelete(id);
+  },
 };
