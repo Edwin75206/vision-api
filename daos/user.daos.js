@@ -1,15 +1,19 @@
 import { Usuario } from "../models/user.model.js";
+import { connectDB } from "../database.js"; // o "../config/db.js" según tu proyecto
 
 export const usuarioDao = {
-  crearUsuario(datosUsuario) {
+  async crearUsuario(datosUsuario) {
+    await connectDB();
     return Usuario.create(datosUsuario);
   },
 
-  buscarPorCorreo(correo) {
+  async buscarPorCorreo(correo) {
+    await connectDB();
     return Usuario.findOne({ correo });
   },
 
-  buscarPorId(idUsuario) {
+  async buscarPorId(idUsuario) {
+    await connectDB();
     return Usuario.findById(idUsuario);
   },
 };

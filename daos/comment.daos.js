@@ -1,30 +1,29 @@
+import { connectDB } from "../database.js"; // o ../config/db.js según tu proyecto
 import { Comentario } from "../models/comment.model.js";
 
 export const comentarioDao = {
-  obtenerPorLugar(idLugar) {
-    return Comentario.find({ lugar: idLugar })
-      .sort({ createdAt: -1 })
-      .populate("usuario", "nombre rol");
+  async crear(data) {
+    await connectDB();
+    return Comentario.create(data);
   },
 
-  crear(datosComentario) {
-    return Comentario.create(datosComentario);
-  },
-  obtenerPorId(id) {
-    return Comentario.findById(id).populate("usuario", "nombre rol");
+  async actualizar(filtro, data) {
+    await connectDB();
+    return Comentario.findOneAndUpdate(filtro, data, { new: true });
   },
 
-  // ✅ NUEVO
-  actualizarTexto(id, texto) {
-    return Comentario.findByIdAndUpdate(
-      id,
-      { texto },
-      { new: true }
-    ).populate("usuario", "nombre rol");
+  async obtenerPorId(id) {
+    await connectDB();
+    return Comentario.findById(id);
   },
 
-  // ✅ NUEVO
-  eliminar(id) {
-    return Comentario.findByIdAndDelete(id);
+  async eliminar(filtro) {
+    await connectDB();
+    return Comentario.findOneAndDelete(filtro);
+  },
+
+  async listarPorLugar(lugarId) {
+    await connectDB();
+    return Comentario.find({ lugarId }).sort({ createdAt: -1 });
   },
 };
